@@ -3,28 +3,30 @@ import './App.css'
 import Header from './components/Header.jsx';
 import ImageUpload from './components/ImageUpload.jsx';
 import ImageGallery from './components/ImageGallery.jsx';
-const App = () => {
-  const [currentPage, setCurrentPage] = useState('gallery'); // 'gallery' or 'upload'
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import Login from './Login';
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'gallery':
-        return <ImageGallery />;
-      case 'upload':
-        return <ImageUpload />;
-      default:
-        return <ImageGallery />;
-    }
-  };
+
+
+
+const App = () => {
+
+
 
   return (
     <div className="app-container">
-      <Header
-        onNavigateToGallery={() => setCurrentPage('gallery')}
-        onNavigateToUpload={() => setCurrentPage('upload')}
-      />
-
-      {renderPage()}
+      <Router>
+        <div className="text-center">
+          <header className="bg-black text-white p-4">
+            <h1 className="text-3xl">The Tobi Gallery</h1>
+          </header>
+          <Routes>
+            <Route exact path='/' element={<ImageGallery />} />
+            <Route path='/upload' element={<ImageUpload />} />
+            <Route path='/login' element={<Login />} />
+          </Routes>
+        </div>
+      </Router>
     </div>
   );
 };

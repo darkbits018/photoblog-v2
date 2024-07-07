@@ -2,6 +2,21 @@ import React, { useState } from 'react'
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage, firestore } from './firebaseConfig'; // Import storage and firestore from your Firebase config
 import { collection, addDoc } from 'firebase/firestore';  // Import firestore functions
+import './ImageUpload.css'
+import withAuth from './withAuth';
+import Select from 'react-select';
+const predefinedTags = [
+    { value: 'nature', label: 'Nature' },
+    { value: 'adventures-of-tobi', label: 'Adventures Of Tobi' },
+    { value: 'curious-cat', label: 'Curious Cat' },
+    { value: 'elongated-tobi', label: 'Elongated Tobi' },
+    { value: 'lazy-tobi', label: 'Lazy Tobi' },
+    { value: 'sleepy-tobi', label: 'Sleepy Tobi' },
+    { value: 'smol-tobi', label: 'Smol Tobi' },
+    { value: 'tobi-in-wild', label: 'Tobi In Wild' },
+    { value: 'other-cat', label: 'Other Cat' }
+];
+
 
 
 
@@ -11,6 +26,8 @@ const ImageUpload = () => {
     const [uploading, setUploading] = useState(false);
     const [imageUrl, setImageUrl] = useState(null);
     const [title, setTitle] = useState('');
+    const [selectedTags, setSelectedTags] = useState([]);
+
 
 
     const handleImageChange = async (event) => {
@@ -24,6 +41,9 @@ const ImageUpload = () => {
             reader.readAsDataURL(file);
         }
     }
+    const handleTagsChange = (selectedOptions) => {
+        setSelectedTags(selectedOptions);
+    };
 
 
     const handleSubmit = async (event) => {
@@ -42,7 +62,8 @@ const ImageUpload = () => {
             // Store image data in Firestore
             const docRef = await addDoc(collection(firestore, 'images'), {
                 imageUrl: url,
-                title: title
+                title: title,
+                tags: selectedTags.map(tag => tag.value)
             });
             console.log('Image data stored in Firestore with ID:', docRef.id);
         } catch (error) {
@@ -62,7 +83,14 @@ const ImageUpload = () => {
                     Title:
                     <input type="text" name="title" value={title} onChange={(e) => setTitle(e.target.value)} />
                 </label>
-                <button type="submit" disabled={uploading}>{uploading ? 'Uploading...' : 'Upload Image'}</button>
+                <Select
+                    isMulti
+                    options={predefinedTags}
+                    value={selectedTags}
+                    onChange={handleTagsChange}
+                    placeholder="Select tags"
+                />
+                <button className='button-upload' type="submit" disabled={uploading} >{uploading ? 'Uploading...' : 'Upload Image'  }</button>
             </form>
             {imageUrl && (
                 <div>
